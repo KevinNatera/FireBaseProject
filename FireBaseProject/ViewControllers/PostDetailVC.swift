@@ -10,21 +10,50 @@ import UIKit
 
 class PostDetailVC: UIViewController {
 
+    
+    @IBOutlet weak var imageOutlet: UIImageView!
+    @IBOutlet weak var creatorLabel: UILabel!
+    @IBOutlet weak var dateCreatedLabel: UILabel!
+    
+    var post: Post!
+       
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        loadData()
+    }
 
-        // Do any additional setup after loading the view.
+    private func loadData() {
+        FirebaseStorage.postManager.getImages(profileUrl: post.imageUrl!) { (result) in
+            switch result {
+            case .failure(let error):
+                print(error)
+            case .success(let imageData):
+                self.imageOutlet.image = UIImage(data: imageData)
+            }
+        }
+        
+        FirestoreService.manager.getUserFromPost(creatorID: post.creatorID) { (result) in
+                   DispatchQueue.main.async {
+                       switch result{
+                       case .failure(let error):
+                           print(error)
+                       case .success(let user):
+                           if let userName = user.userName {
+                               self.creatorLabel.text = userName
+                           } else if let email = user.email {
+                               self.creatorLabel.text = email
+                           } else {
+                               self.creatorLabel.text = "New User"
+                           }
+                       }
+                   }
+               }
+        
+        let df = DateFormatter()
+        df.dateFormat = "MM-dd-yyyy   hh:mm aa"
+        dateCreatedLabel.text = df.string(from: post.dateCreated!)
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
+    
 }
