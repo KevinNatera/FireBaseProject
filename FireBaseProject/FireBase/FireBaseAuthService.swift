@@ -10,6 +10,7 @@ import Foundation
 import FirebaseAuth
 
 class FirebaseAuthService {
+    
     static let manager = FirebaseAuthService()
     
     private let auth = Auth.auth()
@@ -54,6 +55,14 @@ class FirebaseAuthService {
             }
         }
     }
+    
+    func logOut(completion: @escaping (Result<(), Error>) -> ()) {
+           do {
+            try auth.signOut()
+           } catch {
+               print(error)
+           }
+       }
 
     private init () {}
 }
