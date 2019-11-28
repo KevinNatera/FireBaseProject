@@ -7,6 +7,10 @@ target 'FireBaseProject' do
 
   # Pods for FireBaseProject
 
+	pod 'Firebase/Auth'
+	pod 'Firebase/Firestore'
+	pod 'Firebase/Storage'
+
   target 'FireBaseProjectTests' do
     inherit! :search_paths
     # Pods for testing
