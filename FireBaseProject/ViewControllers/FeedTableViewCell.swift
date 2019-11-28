@@ -9,16 +9,35 @@
 import UIKit
 
 class FeedTableViewCell: UITableViewCell {
-
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        // Initialization code
+    
+    @IBOutlet weak var userNameLabel: UILabel!
+    @IBOutlet weak var postImageOutlet: UIImageView!
+    
+    
+    func configureCell(post: Post) {
+        FirebaseStorage.postManager.getImages(profileUrl: post.imageUrl!) { (result) in
+            switch result {
+            case .failure(let error):
+                print(error)
+            case .success(let imageData):
+                self.postImageOutlet.image = UIImage(data: imageData)
+            }
+        }
+        FirestoreService.manager.getUserFromPost(creatorID: post.creatorID) { (result) in
+            DispatchQueue.main.async {
+                switch result{
+                case .failure(let error):
+                    print(error)
+                case .success(let user):
+                    if let userName = user.userName {
+                        self.userNameLabel.text = userName
+                    } else if let email = user.email {
+                        self.userNameLabel.text = email
+                    } else {
+                        self.userNameLabel.text = "New User"
+                    }
+                }
+            }
+        }
     }
-
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
-    }
-
 }
